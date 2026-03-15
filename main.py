@@ -24,7 +24,14 @@ def conectar_sheets():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive"
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    google_credentials = os.getenv("GOOGLE_CREDENTIALS")
+    if google_credentials:
+        import json
+        from oauth2client.service_account import ServiceAccountCredentials
+        creds_dict = json.loads(google_credentials)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    else:
+        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
     client = gspread.authorize(creds)
     sheet = client.open(SHEET_NAME).sheet1
     return sheet
